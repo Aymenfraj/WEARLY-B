@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0a0e1a"><title>WEARLY</title>
+<link rel="stylesheet" href="css/app.css"><link rel="stylesheet" href="css/extra.css"></head><body>
+
+<div id="topbar">
+  <div class="icon-btn" onclick="window.openDrawer()">☰</div>
+  <div class="brand">✨ WEARLY</div>
+  <div class="icon-btn primary" onclick="window.goTab('gifts')" style="position:relative">
+    🎁
+    <span class="notif-count" id="giftBadge" style="display:none">0</span>
+  </div>
+</div>
+
+<div id="drawer-overlay" onclick="window.closeDrawer()"></div>
+<div id="drawer"></div>
+
+<div id="onb"></div>
+
+<div id="swipe-stage">
+  <div id="main"></div>
+</div>
+
+<div id="nav"></div>
+<div id="ov"></div>
+<div id="toast"></div>
+
+
+<script src="js/diag.js"></script>
+<script src="js/legacy/app.js"></script>
+<script type="module" src="js/main.js"></script>
+</body></html>
