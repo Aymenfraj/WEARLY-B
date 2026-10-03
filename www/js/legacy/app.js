@@ -406,8 +406,11 @@ function go(){
     '<div class="nav-btn '+(S.tab === 'profile' ? 'on' : '')+'" onclick="window.goTab(\'profile\')"><span>👤</span>Moi</div>';
   $('#nav').innerHTML = navHtml;
 
-  renderDrawer();
+    renderDrawer();
   updateNotifCount();
+
+  /* ---------- Sauvegarde automatique de l'état ---------- */
+  if (window.AppState) window.AppState.save(S);
 }
 
 function goTab(t){ S.tab = t; var m = $('#main'); if(m) m.scrollTop = 0; go(); }
@@ -1317,6 +1320,8 @@ function toggleTheme(){
 
 function resetOnb(){
   if(!confirm('Réinitialiser l\'app ?')) return;
+  /* ---------- Effacer l'état sauvegardé ---------- */
+  if (window.AppState) window.AppState.clear();
   S.ob = 0;
   S.obData = {name:'', sex:'', age:25, country:'SN', phone:'', stylePref:'', budget:20000, colors:[]};
   S.prof = {name:'', sex:'', age:25, country:'SN', photo:null, style:'', budget:20000, colors:[], address:'', email:''};
@@ -1421,6 +1426,41 @@ var oH2=V.home;V.home=function(){var h=oH2(),n=VI.filter(function(i){return i.m!
 var oF=V.friends;V.friends=function(){return oF().replace('<div class="row" style="gap:8px;margin-bottom:14px">','<button class="btn g full" style="margin-bottom:12px" onclick="window.goTab(\'vestiaire\')">👗 Vestiaire des amis · prêt & location</button><div class="row" style="gap:8px;margin-bottom:14px">')};
 
 window.WEARLY_UI={V:V,S:S,toast:toast,ov:ov,go:function(){go()},goTab:goTab};
-renderOnb();
+
+/* ============================================================
+   BOOT : exposition globale + chargement de l'état sauvegardé
+   ============================================================ */
+window.S = S;
+window.__wearlyRefresh = function(){ go(); };
+
+function bootWearly(){
+  function start(){
+    var obEl = document.getElementById('onb');
+    if (S.ob >= 8) {
+      if (obEl) obEl.style.display = 'none';
+      if (window.AppState) console.log('[WEARLY] moteur de stockage :', window.AppState.engine());
+      go();
+    } else {
+      renderOnb();
+    }
+  }
+  if (window.AppState) {
+    window.AppState.load(S).then(start).catch(start);
+  } else {
+    start();
+  }
+}
+bootWearly();
+
+/* Sauvegarde à la fermeture / mise en arrière-plan */
+window.addEventListener('beforeunload', function(){
+  if (window.AppState) window.AppState.flush(S);
+});
+document.addEventListener('pause', function(){
+  if (window.AppState) window.AppState.flush(S);
+}, false);
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden && window.AppState) window.AppState.flush(S);
+});
 
 })();
